@@ -69,7 +69,7 @@ Failed Tests:
 Use `-t` to filter by test name:
 
 ```sh
-% ./go-test-sift -s -t TestRouteHardStopAfterTestOneDayDuration https://gcsweb-ci.apps.ci.l2s4.p1.openshiftapps.com/gcs/test-platform-results/pr-logs/pull/openshift_cluster-ingress-operator/1182/pull-ci-openshift-cluster-ingress-operator-master-e2e-aws-operator-techpreview/1881365030088216576/artifacts/e2e-aws-operator-techpreview/test/build-log.txt
+$ go-test-sift -s -t TestRouteHardStopAfterTestOneDayDuration https://gcsweb-ci.apps.ci.l2s4.p1.openshiftapps.com/gcs/test-platform-results/pr-logs/pull/openshift_cluster-ingress-operator/1182/pull-ci-openshift-cluster-ingress-operator-master-e2e-aws-operator-techpreview/1881365030088216576/artifacts/e2e-aws-operator-techpreview/test/build-log.txt
         --- PASS: TestAll/serial/TestRouteHardStopAfterTestOneDayDuration (2.10s)
             2025-01-20T17:35:28.408Z	ERROR	operator.ingress_controller	ingress/deployment.go:215	invalid HAProxy time value	{"annotation": "ingress.operator.openshift.io/hard-stop-after", "value": "mañana", "error": "time: invalid duration \"ma\\xc3\\xb1ana\""}
 ```
