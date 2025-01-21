@@ -102,8 +102,12 @@ func main() {
 		started := false
 		inSummary := false
 		lineNumber := 0
-
+		stopParsing := false
 		for scanner.Scan() {
+			if stopParsing {
+				break
+			}
+
 			lineNumber++
 			line := scanner.Text()
 
@@ -133,6 +137,13 @@ func main() {
 
 			if inSummary {
 				trimmed := strings.TrimSpace(line)
+				if trimmed == "FAIL" {
+					stopParsing = true
+					if *debugFlag {
+						fmt.Printf("[DEBUG] Encountered FAIL terminator at line %d; parsing now stopped\n", lineNumber)
+					}
+					continue
+				}
 				if strings.HasPrefix(trimmed, "---") {
 					fields := strings.Fields(trimmed)
 					// Expecting format: --- STATUS: TestName (Time).
@@ -174,7 +185,6 @@ func main() {
 				if *debugFlag {
 					fmt.Printf("[DEBUG] Resuming test context: %s at line %d\n", currentTest, lineNumber)
 				}
-				continue
 			case nameRegex.MatchString(line):
 				match := nameRegex.FindStringSubmatch(line)
 				newName := match[1]
