@@ -17,7 +17,7 @@ various OpenShift repositories. ]
 ## Install
 
 ```
-go install github.com/frobware/go-sift-tool@latest
+go install github.com/frobware/go-test-sift@latest
 ```
 
 ## Usage
