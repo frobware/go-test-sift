@@ -1,12 +1,6 @@
 # go-test-sift
 
-A tool for processing Go test output that reconstructs and regroups parallel test logs into their logical structure.
-
-[ Note: I have only exercised this tool against the test output from the [cluster-ingress-operator](https://github.com/openshift/cluster-ingress-operator) e2e logs. ]
-
-## Why?
-
-When Go runs tests in parallel, the output from different tests gets interleaved in the log. `go-test-sift` automatically regroups this output so all lines from each test are collected together, maintaining the proper parent/child test hierarchy. This makes test logs much easier to read and debug.
+When Go runs unit tests in parallel, their output becomes an interleaved mess, making debugging test failures difficult. `go-test-sift` restores order by regrouping all output for each test and its subtests into a clean, hierarchical structure, preserving the parent-child relationships.
 
 ## Installation
 
