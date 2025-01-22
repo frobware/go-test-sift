@@ -2,6 +2,8 @@
 
 When Go runs unit tests in parallel, their output becomes an interleaved mess, making debugging test failures difficult. `go-test-sift` restores order by regrouping all output for each test and its subtests into a clean, hierarchical structure, preserving the parent-child relationships.
 
+[ YMMV: I have only exercised this tool against the test output from the [cluster-ingress-operator](https://github.com/openshift/cluster-ingress-operator) e2e logs. ]
+
 ## Installation
 
 ```sh
