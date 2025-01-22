@@ -25,10 +25,6 @@ Options:
       program processes the input, including line-by-line analysis and
       test context switching.
 
-  -s  Serialise all test output to stdout. This mode prints each
-      test's output alongside its summary, without creating any output
-      files.
-
   -w  Write each test's output to individual files, organised by test
       name. Files are created in a directory structure that matches
       the test hierarchy.
@@ -78,7 +74,6 @@ func main() {
 	listFailuresWithOutput := flag.Bool("L", false, "Print summary of failures and include the full output for each failure")
 	forceFlag := flag.Bool("F", false, "Force directory creation even if directories exist")
 	debugFlag := flag.Bool("d", false, "Enable debug output")
-	serialiseFlag := flag.Bool("s", false, "Serialise all output to stdout without summarising or writing directories")
 	writeFiles := flag.Bool("w", false, "Write each test's output to individual files")
 	outputDir := flag.String("o", ".", "Base directory to write output files (default current directory)")
 	testPattern := flag.String("t", ".*", "Regular expression to filter test names for summary output")
@@ -266,40 +261,6 @@ func main() {
 		}
 	}
 
-	if *serialiseFlag {
-		for _, summary := range summaryRecords {
-			if !reTest.MatchString(summary.Name) {
-				continue
-			}
-			indent := strings.Repeat("    ", summary.Level)
-			fmt.Printf("%s--- %s: %s (%s)\n", indent, summary.Status, summary.Name, summary.Time)
-			if lines, exists := testBuffers[summary.Name]; exists {
-				for _, line := range lines {
-					fmt.Printf("%s    %s\n", indent, line)
-				}
-			}
-		}
-		return
-	}
-
-	if *listFailures || *listFailuresWithOutput {
-		fmt.Println("Failed Tests:")
-		for _, summary := range summaryRecords {
-			if summary.Status == FailMarker && reTest.MatchString(summary.Name) {
-				indent := strings.Repeat("    ", summary.Level)
-				fmt.Printf("%s--- %s: %s (%s)\n", indent, summary.Status, summary.Name, summary.Time)
-				if *listFailuresWithOutput {
-					if lines, exists := testBuffers[summary.Name]; exists {
-						for _, line := range lines {
-							fmt.Printf("%s    %s\n", indent, line)
-						}
-					}
-				}
-			}
-		}
-		return
-	}
-
 	if *writeFiles {
 		var dirsToCreate []string
 		for testName := range testBuffers {
@@ -343,11 +304,34 @@ func main() {
 		return
 	}
 
-	// Default behaviour: summarise failures only.
+	if *listFailures || *listFailuresWithOutput {
+		for _, summary := range summaryRecords {
+			if summary.Status == FailMarker && reTest.MatchString(summary.Name) {
+				indent := strings.Repeat("    ", summary.Level)
+				fmt.Printf("%s--- %s: %s (%s)\n", indent, summary.Status, summary.Name, summary.Time)
+				if *listFailuresWithOutput {
+					if lines, exists := testBuffers[summary.Name]; exists {
+						for _, line := range lines {
+							fmt.Printf("%s    %s\n", indent, line)
+						}
+					}
+				}
+			}
+		}
+		return
+	}
+
+	// Default behavior: regroup test output.
 	for _, summary := range summaryRecords {
-		if summary.Status == "FAIL" && reTest.MatchString(summary.Name) {
-			indent := strings.Repeat("    ", summary.Level)
-			fmt.Printf("%s--- %s: %s (%s)\n", indent, summary.Status, summary.Name, summary.Time)
+		if !reTest.MatchString(summary.Name) {
+			continue
+		}
+		indent := strings.Repeat("    ", summary.Level)
+		fmt.Printf("%s--- %s: %s (%s)\n", indent, summary.Status, summary.Name, summary.Time)
+		if lines, exists := testBuffers[summary.Name]; exists {
+			for _, line := range lines {
+				fmt.Printf("%s    %s\n", indent, line)
+			}
 		}
 	}
 }
