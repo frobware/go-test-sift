@@ -40,3 +40,18 @@ To filter specific tests:
 ```sh
 go-test-sift -t "TestAuth.*" test.log  # Only process tests matching pattern
 ```
+
+### Synopsis
+
+```sh
+go-test-sift [options] [file|url ...]
+  -F	Force directory creation even if directories exist
+  -L	Print summary of failures and include the full output for each failure
+  -d	Enable debug output
+  -l	Print summary of failures (list test names with failures)
+  -o string
+        Base directory to write output files (default current directory) (default ".")
+  -t string
+        Regular expression to filter test names for summary output (default ".*")
+  -w	Write each test's output to individual files
+```
