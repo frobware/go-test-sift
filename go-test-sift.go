@@ -68,6 +68,11 @@ type TestSummary struct {
 	Level  int
 }
 
+const (
+	FailMarker = "FAIL"
+	PassMarker = "PASS"
+)
+
 func main() {
 	listFailures := flag.Bool("l", false, "Print summary of failures (list test names with failures)")
 	listFailuresWithOutput := flag.Bool("L", false, "Print summary of failures and include the full output for each failure")
@@ -137,13 +142,6 @@ func main() {
 
 			if inSummary {
 				trimmed := strings.TrimSpace(line)
-				if trimmed == "FAIL" {
-					stopParsing = true
-					if *debugFlag {
-						fmt.Printf("[DEBUG] Encountered FAIL terminator at line %d; parsing now stopped\n", lineNumber)
-					}
-					continue
-				}
 				if strings.HasPrefix(trimmed, "---") {
 					fields := strings.Fields(trimmed)
 					// Expecting format: --- STATUS: TestName (Time).
@@ -168,6 +166,12 @@ func main() {
 						if *debugFlag {
 							fmt.Printf("[DEBUG] Added summary record at line %d: %+v\n", lineNumber, newSummary)
 						}
+					}
+				}
+				if trimmed == FailMarker || trimmed == PassMarker {
+					stopParsing = true
+					if *debugFlag {
+						fmt.Printf("[DEBUG] Encountered %s terminator at line %d; parsing now stopped\n", trimmed, lineNumber)
 					}
 				}
 				continue
@@ -281,7 +285,7 @@ func main() {
 	if *listFailures || *listFailuresWithOutput {
 		fmt.Println("Failed Tests:")
 		for _, summary := range summaryRecords {
-			if summary.Status == "FAIL" && reTest.MatchString(summary.Name) {
+			if summary.Status == FailMarker && reTest.MatchString(summary.Name) {
 				indent := strings.Repeat("    ", summary.Level)
 				fmt.Printf("%s--- %s: %s (%s)\n", indent, summary.Status, summary.Name, summary.Time)
 				if *listFailuresWithOutput {
