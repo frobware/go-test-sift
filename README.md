@@ -42,9 +42,23 @@ To save regrouped output to files:
 go-test-sift -w test.log     # Creates directory structure by test name
 ```
 
-To filter specific tests:
+### Test Filtering
+
+The `-t` flag accepts a regular expression to filter which tests to process. It can be used:
+- On its own to filter the default regrouped output
+- Combined with `-l` or `-L` to filter which failures to show
+- Combined with `-w` to filter which test outputs to write to files
+
+Examples:
 ```sh
-go-test-sift -t "TestAuth.*" test.log  # Only process tests matching pattern
+# Only show output for specific tests
+go-test-sift -t "TestAuth.*" test.log
+
+# Only summarise failures for specific tests
+go-test-sift -t "TestAuth.*" -l test.log
+
+# Only write specific test outputs to files
+go-test-sift -t "TestAuth.*" -w test.log
 ```
 
 ### Synopsis
