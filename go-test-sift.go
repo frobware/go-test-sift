@@ -262,21 +262,24 @@ func main() {
 	}
 
 	if *writeFiles {
-		var dirsToCreate []string
-		for testName := range testBuffers {
-			dirsToCreate = append(dirsToCreate, filepath.Join(*outputDir, testName))
+		matchingTests := make(map[string][]string)
+		for testName, lines := range testBuffers {
+			if reTest.MatchString(testName) {
+				matchingTests[testName] = lines
+			}
 		}
 
-		if !*forceFlag {
-			for _, dirPath := range dirsToCreate {
+		// Create directories only for matching tests.
+		for testName := range matchingTests {
+			dirPath := filepath.Join(*outputDir, testName)
+
+			if !*forceFlag {
 				if _, err := os.Stat(dirPath); err == nil {
 					fmt.Fprintf(os.Stderr, "Error: directory '%s' already exists.\n", dirPath)
 					os.Exit(1)
 				}
 			}
-		}
 
-		for _, dirPath := range dirsToCreate {
 			if err := os.MkdirAll(dirPath, 0755); err != nil {
 				fmt.Fprintf(os.Stderr, "Error creating directory %s: %v\n", dirPath, err)
 				os.Exit(1)
@@ -284,10 +287,8 @@ func main() {
 			if *debugFlag {
 				fmt.Printf("[DEBUG] Created directory: %s\n", dirPath)
 			}
-		}
 
-		for testName, lines := range testBuffers {
-			filePath := filepath.Join(*outputDir, testName, "output.log")
+			filePath := filepath.Join(dirPath, "output.log")
 			file, err := os.Create(filePath)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error creating file %s: %v\n", filePath, err)
@@ -296,7 +297,7 @@ func main() {
 			if *debugFlag {
 				fmt.Printf("[DEBUG] Writing to file: %s\n", filePath)
 			}
-			for _, line := range lines {
+			for _, line := range matchingTests[testName] {
 				_, _ = file.WriteString(line + "\n")
 			}
 			file.Close()
