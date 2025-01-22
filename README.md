@@ -6,6 +6,12 @@ A tool for processing Go test output that reconstructs and regroups parallel tes
 
 When Go runs tests in parallel, the output from different tests gets interleaved in the log. `go-test-sift` automatically regroups this output so all lines from each test are collected together, maintaining the proper parent/child test hierarchy. This makes test logs much easier to read and debug.
 
+## Installation
+
+```sh
+go install github.com/frobware/go-test-sift@latest
+```
+
 ## Usage
 
 The simplest case is to pipe Go test output directly to `go-test-sift`:
