@@ -62,7 +62,7 @@ go-test-sift -t "TestAuth.*" -w test.log
 ### Synopsis
 
 ```sh
-go-test-sift [options] [file|url ...]
+go-test-sift [options] <file|URL>
   -F	Force directory creation even if directories exist
   -L	Print summary of failures and include the full output for each failure
   -d	Enable debug output
